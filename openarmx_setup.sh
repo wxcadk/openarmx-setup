@@ -332,9 +332,9 @@ step "$((++CURRENT_STEP))/$TOTAL_STEPS 安装 CAN 驱动"
 
 if $SKIP_DRIVER; then
     warn "跳过 CAN 驱动安装 (--skip-driver)"
-elif lsmod | grep -q kcan; then
+elif lsmod 2>/dev/null | grep -c kcan >/dev/null 2>&1; then
     log "KCAN 驱动已加载 ($(cat /sys/class/kcan/version 2>/dev/null || echo 'unknown'))"
-elif lsmod | grep -q peak_usb; then
+elif lsmod 2>/dev/null | grep -c peak_usb >/dev/null 2>&1; then
     log "PCAN 驱动已加载"
 else
     if $DRY_RUN; then
@@ -440,7 +440,7 @@ verify "PySide6"              "python3 -c 'import PySide6'"
 verify "openarmx_arm_driver"  "python3 -c 'import openarmx_arm_driver'"
 verify "casadi"               "python3 -c 'import casadi'"
 verify "numpy==1.26.4"       "python3 -c 'import numpy; assert numpy.__version__==\"1.26.4\"'"
-verify "CAN 驱动"             "lsmod | grep -qE 'kcan|peak_usb'"
+verify "CAN 驱动"             "lsmod 2>/dev/null | grep -cE 'kcan|peak_usb' | grep -v '^0$'"
 verify "dialout 权限"         "id -nG | grep -q dialout || sg dialout -c true"
 verify "工作空间"             "test -d $WORKSPACE/src"
 verify "openarmx_ros2 代码"   "test -d $WORKSPACE/src/openarmx_ros2"
